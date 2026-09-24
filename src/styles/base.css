@@ -49,7 +49,6 @@ button:disabled {
 }
 
 input,
-select,
 textarea {
   font: inherit;
   color: var(--text);

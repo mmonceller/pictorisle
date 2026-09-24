@@ -1,4 +1,5 @@
 import { MoveTool } from './MoveTool.js';
+import { TransformTool } from './TransformTool.js';
 import { MarqueeTool } from './MarqueeTool.js';
 import { BrushTool } from './BrushTool.js';
 import { EraserTool } from './EraserTool.js';
@@ -12,6 +13,7 @@ import { ZoomTool } from './ZoomTool.js';
 
 const TOOL_CLASSES = [
   MoveTool,
+  TransformTool,
   MarqueeTool,
   BrushTool,
   EraserTool,

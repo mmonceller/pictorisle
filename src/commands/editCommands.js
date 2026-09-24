@@ -28,7 +28,9 @@ export function editCommands(app) {
   };
 
   return {
-    undo: () => app.history.undo(),
+    undo: () => {
+      if (!app.activeTool.revertPending()) app.history.undo();
+    },
     redo: () => app.history.redo(),
 
     copy() {

@@ -7,6 +7,21 @@ import { viewCommands } from './viewCommands.js';
 import { toolCommands } from './toolCommands.js';
 import { filterCommands } from './filterCommands.js';
 
+// Commands that don't touch pixels, so an in-progress tool edit can stay open.
+const PASSIVE = new Set([
+  'undo',
+  'redo',
+  'zoomIn',
+  'zoomOut',
+  'fitToScreen',
+  'actualSize',
+  'swapColors',
+  'resetColors',
+  'brushSmaller',
+  'brushLarger',
+  'freeTransform',
+]);
+
 export function createCommands(app) {
   const registry = {
     ...fileCommands(app),
@@ -27,6 +42,7 @@ export function createCommands(app) {
         console.warn(`Unknown command: ${name}`);
         return undefined;
       }
+      if (!PASSIVE.has(name)) app.activeTool.commitPending();
       return command(...args);
     },
   };

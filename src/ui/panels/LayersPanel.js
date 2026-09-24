@@ -2,23 +2,21 @@ import { h } from '../../utils/dom.js';
 import { icon } from '../icons.js';
 import { drawThumbnail } from '../thumbnail.js';
 import { BLEND_MODES } from '../../core/blendModes.js';
+import { createDropdown } from '../controls/Dropdown.js';
 
 export class LayersPanel {
   constructor(app, el) {
     this.app = app;
 
-    this.blendSelect = h(
-      'select',
-      {
-        class: 'blend-select',
-        title: 'Blend mode',
-        onChange: (e) => {
-          app.doc.activeLayer.blendMode = e.target.value;
-          app.commit('Blend Mode', []);
-        },
+    this.blendSelect = createDropdown({
+      options: BLEND_MODES,
+      className: 'blend-select',
+      title: 'Blend mode',
+      onChange: (value) => {
+        app.doc.activeLayer.blendMode = value;
+        app.commit('Blend Mode', []);
       },
-      BLEND_MODES.map(([value, label]) => h('option', { value }, label)),
-    );
+    });
     this.opacityValue = h('span', { class: 'opacity-value' });
     this.opacityRange = h('input', {
       type: 'range',

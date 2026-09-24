@@ -1,6 +1,7 @@
 import { h } from '../../utils/dom.js';
 import { clamp } from '../../utils/math.js';
 import { openModal } from './Modal.js';
+import { createDropdown } from '../controls/Dropdown.js';
 
 /**
  * Shows a form and resolves with the entered values, or null if cancelled.
@@ -77,9 +78,8 @@ function createControl(field, onChange) {
       };
     }
     case 'select': {
-      const select = h('select', { value }, field.options.map(([v, label]) => h('option', { value: v }, label)));
-      select.addEventListener('change', () => onChange(select.value));
-      return { element: select, sync: (v) => (select.value = v) };
+      const dropdown = createDropdown({ options: field.options, value, onChange });
+      return { element: dropdown, sync: (v) => (dropdown.value = v) };
     }
     case 'checkbox': {
       const input = h('input', { type: 'checkbox', checked: !!value });

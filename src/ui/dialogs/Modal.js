@@ -23,7 +23,9 @@ export function openModal({ title, content, buttons = [], onClose }) {
   );
   const backdrop = h('div', { class: 'modal-backdrop' }, modal);
 
+  // Bubble phase, so focused controls (e.g. an open dropdown) handle keys first.
   const onKey = (e) => {
+    if (e.defaultPrevented) return;
     if (e.key === 'Escape') {
       e.preventDefault();
       close();
@@ -31,19 +33,18 @@ export function openModal({ title, content, buttons = [], onClose }) {
       e.preventDefault();
       primaryButton?.click();
     }
-    e.stopPropagation();
   };
 
   function close() {
     if (closed) return;
     closed = true;
     backdrop.remove();
-    window.removeEventListener('keydown', onKey, true);
+    window.removeEventListener('keydown', onKey);
     onClose?.();
   }
 
-  window.addEventListener('keydown', onKey, true);
+  window.addEventListener('keydown', onKey);
   document.getElementById('modal-root').append(backdrop);
-  requestAnimationFrame(() => modal.querySelector('input, select, .btn-primary')?.focus());
+  requestAnimationFrame(() => modal.querySelector('input, .dropdown, .btn-primary')?.focus());
   return { close, element: modal };
 }

@@ -23,6 +23,7 @@ export const SHORTCUTS = {
   'ctrl+j': 'duplicateLayer',
   'ctrl+]': 'moveLayerUp',
   'ctrl+[': 'moveLayerDown',
+  'ctrl+alt+t': 'freeTransform',
   'ctrl+e': 'mergeDown',
   'ctrl+shift+e': 'flatten',
   'ctrl+alt+i': 'imageSize',

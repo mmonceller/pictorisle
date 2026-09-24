@@ -1,6 +1,9 @@
 import { createCanvas } from '../utils/canvas.js';
 
-/** Adds `image` as a new layer. Without a position it is scaled down to fit and centered. */
+/**
+ * Adds `image` as a new layer and opens it in the Transform tool.
+ * Without a position it is scaled down to fit and centered.
+ */
 export function placeImageAsLayer(app, image, name = 'Placed Image', position = null) {
   const doc = app.doc;
   const layer = doc.createLayer(name);
@@ -18,6 +21,7 @@ export function placeImageAsLayer(app, image, name = 'Placed Image', position = 
   layer.ctx.drawImage(image, Math.round(position.x), Math.round(position.y), w, h);
   doc.addLayer(layer);
   app.commit(`Place ${name}`, [layer]);
+  app.setTool('transform');
 }
 
 /** Copies a rectangle of a layer into a new canvas. */

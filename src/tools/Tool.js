@@ -38,6 +38,12 @@ export class Tool {
     this.cancel();
   }
   cancel() {}
+  /** Called before commands run so in-progress edits are committed first. */
+  commitPending() {}
+  /** Discards in-progress edits; returns true if there were any (Undo uses this). */
+  revertPending() {
+    return false;
+  }
   onPointerDown() {}
   onPointerMove() {}
   onPointerUp() {}

@@ -1,6 +1,7 @@
 import { h } from '../../utils/dom.js';
 import { clamp } from '../../utils/math.js';
 import { icon } from '../icons.js';
+import { createDropdown } from '../controls/Dropdown.js';
 
 /** Renders the active tool's `schema` as editable controls bound to `tool.options`. */
 export class OptionsBar {
@@ -42,16 +43,27 @@ export class OptionsBar {
         });
         return h('label', { class: 'option' }, field.label, slider, readout, field.unit ?? '');
       }
+      case 'number': {
+        const input = h('input', { type: 'number', class: 'num', min: field.min, max: field.max, step: field.step ?? 1, value });
+        input.addEventListener('change', () => {
+          const v = clamp(Number(input.value) || 0, field.min, field.max);
+          input.value = v;
+          set(v);
+        });
+        return h('label', { class: 'option' }, field.label, input, field.unit ?? '');
+      }
       case 'select':
         return h(
           'label',
           { class: 'option' },
           field.label,
-          h(
-            'select',
-            { value, onChange: (e) => set(e.target.value) },
-            field.options.map(([v, label]) => h('option', { value: v }, label)),
-          ),
+          createDropdown({ options: field.options, value, onChange: set }),
+        );
+      case 'button':
+        return h(
+          'button',
+          { class: `option-button${field.primary ? ' primary' : ''}`, title: field.title, onClick: field.action },
+          field.label,
         );
       case 'checkbox':
         return h(
