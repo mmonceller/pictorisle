@@ -1,0 +1,62 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  background: var(--bg-bar);
+  border-right: 1px solid var(--border);
+}
+
+.tool-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 34px;
+  border-radius: var(--radius);
+  color: var(--text-muted);
+}
+
+.tool-button:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.tool-button.active {
+  background: var(--bg-active);
+  color: #fff;
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.optionsbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 12px;
+  background: var(--bg-bar);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.options-tool {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 14px;
+  border-right: 1px solid var(--border-soft);
+  font-weight: 600;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.option select,
+.option input {
+  color: var(--text);
+}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PixelForge — Web Image Editor</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="menubar" class="menubar"></header>
+      <div id="optionsbar" class="optionsbar"></div>
+      <main id="main">
+        <nav id="toolbar" class="toolbar"></nav>
+        <section id="workspace" class="workspace">
+          <canvas id="viewport"></canvas>
+        </section>
+        <aside id="panels" class="panels">
+          <section id="color-panel" class="panel color-panel"></section>
+          <section id="history-panel" class="panel history-panel"></section>
+          <section id="layers-panel" class="panel layers-panel"></section>
+        </aside>
+      </main>
+      <footer id="statusbar" class="statusbar"></footer>
+    </div>
+    <div id="modal-root"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
