@@ -8,7 +8,7 @@ export class MenuBar {
     this.el = el;
     this.openIndex = -1;
 
-    el.append(h('div', { class: 'brand' }, 'PixelForge'));
+    el.append(h('div', { class: 'brand' }, 'PictorIsle'));
     this.menus = MENUS.map((menu, index) => {
       const button = h(
         'button',
