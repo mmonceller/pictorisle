@@ -40,7 +40,7 @@ export function editCommands(app) {
     cut() {
       if (!copy()) return;
       const r = app.doc.region;
-      app.doc.activeLayer.ctx.clearRect(r.x, r.y, r.w, r.h);
+      app.doc.activeLayer.erase(r.x, r.y, r.w, r.h);
       app.commit('Cut');
     },
 
@@ -59,7 +59,7 @@ export function editCommands(app) {
         app.toast('Make a selection first');
         return;
       }
-      app.doc.activeLayer.ctx.clearRect(sel.x, sel.y, sel.w, sel.h);
+      app.doc.activeLayer.erase(sel.x, sel.y, sel.w, sel.h);
       app.commit('Clear');
     },
 

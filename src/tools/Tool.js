@@ -33,6 +33,11 @@ export class Tool {
     return layer;
   }
 
+  /** Whether the tool can be used in the current document state (hidden from the toolbar otherwise). */
+  isAvailable() {
+    return true;
+  }
+
   activate() {}
   deactivate() {
     this.cancel();

@@ -3,6 +3,7 @@ import { icon } from '../icons.js';
 
 export class Toolbar {
   constructor(app, el) {
+    this.app = app;
     this.buttons = new Map();
     for (const tool of app.tools.values()) {
       const button = h(
@@ -20,5 +21,10 @@ export class Toolbar {
     app.bus.on('tool:changed', (active) => {
       this.buttons.forEach((button, id) => button.classList.toggle('active', id === active.id));
     });
+    app.bus.on('document:changed', () => this.updateAvailability());
+  }
+
+  updateAvailability() {
+    for (const [id, button] of this.buttons) button.hidden = !this.app.tools.get(id).isAvailable();
   }
 }

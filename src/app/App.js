@@ -33,6 +33,9 @@ export class App {
     this.commands = createCommands(this);
     initUI(this, root);
     this.input = new InputController(this);
+    this.bus.on('document:changed', () => {
+      if (this.activeTool && !this.activeTool.isAvailable()) this.setTool('move');
+    });
 
     this.setTool('brush');
     this.newDocument(1280, 800, '#ffffff');
@@ -96,6 +99,10 @@ export class App {
   setTool(id) {
     const tool = this.tools.get(id);
     if (!tool || tool === this.activeTool) return;
+    if (!tool.isAvailable()) {
+      if (tool.id === 'transform') this.toast('Select an image layer to transform it');
+      return;
+    }
     this.activeTool?.deactivate();
     this.activeTool = tool;
     tool.activate();

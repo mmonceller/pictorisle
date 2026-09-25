@@ -78,6 +78,10 @@ export class TransformTool extends Tool {
 
   // ---- Session lifecycle --------------------------------------------------------------
 
+  isAvailable() {
+    return this.doc?.activeLayer?.kind === 'image';
+  }
+
   activate() {
     this.begin();
   }
@@ -105,7 +109,7 @@ export class TransformTool extends Tool {
     this.syncAngleOption(0);
     const doc = this.doc;
     const layer = doc.activeLayer;
-    if (!layer.visible) return;
+    if (!layer.visible || !this.isAvailable()) return;
     const bounds = contentBounds(layer.canvas, doc.selection);
     if (!bounds) {
       this.app.viewport.requestRender(false);

@@ -59,7 +59,11 @@ export const MENUS = [
       { label: 'Duplicate Layer', command: 'duplicateLayer' },
       { label: 'Delete Layer', command: 'deleteLayer', enabled: (app) => app.doc.layers.length > 1 },
       SEPARATOR,
-      { label: 'Free Transform (Resize / Crop)', command: 'freeTransform' },
+      {
+        label: 'Free Transform (Resize / Crop / Rotate)',
+        command: 'freeTransform',
+        enabled: (app) => app.doc.activeLayer.kind === 'image',
+      },
       { label: 'Flip Layer Horizontal', command: 'flipLayerHorizontal' },
       { label: 'Flip Layer Vertical', command: 'flipLayerVertical' },
       { label: 'Crop Layer to Selection', command: 'cropLayerToSelection', enabled: hasSelection },

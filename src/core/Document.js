@@ -12,6 +12,7 @@ export class Document {
 
     const base = new Layer(width, height, 'Background');
     if (background) {
+      base.backgroundFill = background;
       base.ctx.fillStyle = background;
       base.ctx.fillRect(0, 0, width, height);
     }
@@ -21,6 +22,7 @@ export class Document {
   static fromImage(image) {
     const doc = new Document(image.naturalWidth || image.width, image.naturalHeight || image.height, null);
     doc.layers[0].ctx.drawImage(image, 0, 0);
+    doc.layers[0].kind = 'image';
     return doc;
   }
 

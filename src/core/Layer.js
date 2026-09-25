@@ -6,6 +6,10 @@ export class Layer {
   constructor(width, height, name = 'Layer') {
     this.id = nextId++;
     this.name = name;
+    // 'image' for layers created from image files/clipboard images, otherwise 'raster'.
+    this.kind = 'raster';
+    // Set on an opaque Background layer: vacated pixels are refilled with it instead of turning transparent.
+    this.backgroundFill = null;
     this.setCanvas(createCanvas(width, height));
     this.visible = true;
     this.opacity = 1;
@@ -27,9 +31,24 @@ export class Layer {
     this.version++;
   }
 
+  /** Clears a rectangle on `ctx` (defaults to this layer), refilling it with the background fill if set. */
+  erase(x, y, w, h, ctx = this.ctx) {
+    if (this.backgroundFill) {
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = this.backgroundFill;
+      ctx.fillRect(x, y, w, h);
+      ctx.restore();
+    } else {
+      ctx.clearRect(x, y, w, h);
+    }
+  }
+
   duplicate(name = `${this.name} copy`) {
     const layer = new Layer(1, 1, name);
     layer.setCanvas(cloneCanvas(this.canvas));
+    layer.kind = this.kind;
     layer.visible = this.visible;
     layer.opacity = this.opacity;
     layer.blendMode = this.blendMode;
@@ -43,6 +62,8 @@ export class Layer {
     return {
       id: this.id,
       name: this.name,
+      kind: this.kind,
+      backgroundFill: this.backgroundFill,
       visible: this.visible,
       opacity: this.opacity,
       blendMode: this.blendMode,
@@ -55,6 +76,8 @@ export class Layer {
     const layer = new Layer(1, 1, snap.name);
     layer.id = snap.id;
     layer.setCanvas(cloneCanvas(snap.canvas));
+    layer.kind = snap.kind;
+    layer.backgroundFill = snap.backgroundFill;
     layer.visible = snap.visible;
     layer.opacity = snap.opacity;
     layer.blendMode = snap.blendMode;

@@ -18,6 +18,10 @@
   color: var(--text-muted);
 }
 
+.tool-button[hidden] {
+  display: none;
+}
+
 .tool-button:hover {
   background: var(--bg-hover);
   color: var(--text);

@@ -7,6 +7,7 @@ import { createCanvas } from '../utils/canvas.js';
 export function placeImageAsLayer(app, image, name = 'Placed Image', position = null) {
   const doc = app.doc;
   const layer = doc.createLayer(name);
+  layer.kind = 'image';
   const iw = image.naturalWidth || image.width;
   const ih = image.naturalHeight || image.height;
   let w = iw;
