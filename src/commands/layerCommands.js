@@ -1,20 +1,25 @@
 import { contentBounds } from '../utils/bounds.js';
+import { createCanvas } from '../utils/canvas.js';
 import { intersectRect } from '../utils/math.js';
-import { extractRegion } from './helpers.js';
+import { liftSelection } from '../selection/index.js';
 
 export function layerCommands(app) {
   /** Mirrors the layer's content (or the selected part) in place around its own center. */
   const flipLayer = (axis) => {
     const doc = app.doc;
     const layer = doc.activeLayer;
-    const b = contentBounds(layer.canvas, doc.selection);
+    const sel = doc.selection;
+    const pixels = sel ? liftSelection(layer.canvas, sel) : layer.canvas;
+    const b = contentBounds(pixels);
     if (!b) {
       app.toast('Nothing to flip on this layer');
       return;
     }
-    const source = extractRegion(layer, b);
+    const source = createCanvas(b.w, b.h);
+    source.getContext('2d').drawImage(pixels, -b.x, -b.y);
     const ctx = layer.ctx;
-    ctx.clearRect(b.x, b.y, b.w, b.h);
+    if (sel) layer.erase(sel);
+    else ctx.clearRect(b.x, b.y, b.w, b.h);
     ctx.save();
     if (axis === 'x') ctx.setTransform(-1, 0, 0, 1, 2 * b.x + b.w, 0);
     else ctx.setTransform(1, 0, 0, -1, 0, 2 * b.y + b.h);
@@ -73,15 +78,14 @@ export function layerCommands(app) {
 
     cropLayerToSelection() {
       const doc = app.doc;
-      const rect = intersectRect(doc.selection, doc.bounds);
-      if (!rect) {
+      if (!intersectRect(doc.selection, doc.bounds)) {
         app.toast('Make a selection to crop the layer to');
         return;
       }
       const layer = doc.activeLayer;
-      const kept = extractRegion(layer, rect);
+      const kept = liftSelection(layer.canvas, doc.selection);
       layer.ctx.clearRect(0, 0, doc.width, doc.height);
-      layer.ctx.drawImage(kept, rect.x, rect.y);
+      layer.ctx.drawImage(kept, 0, 0);
       app.commit('Crop Layer');
     },
   };

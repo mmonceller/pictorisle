@@ -1,4 +1,5 @@
 import { createCanvas, cloneCanvas } from '../utils/canvas.js';
+import { selectionPath } from '../selection/shapes.js';
 
 let nextId = 1;
 
@@ -31,18 +32,22 @@ export class Layer {
     this.version++;
   }
 
-  /** Clears a rectangle on `ctx` (defaults to this layer), refilling it with the background fill if set. */
-  erase(x, y, w, h, ctx = this.ctx) {
+  /**
+   * Clears a selection-shaped area (or a plain rect) on `ctx` (defaults to this layer),
+   * refilling it with the background fill if set.
+   */
+  erase(sel, ctx = this.ctx) {
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clip(selectionPath(sel));
     if (this.backgroundFill) {
-      ctx.save();
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = this.backgroundFill;
-      ctx.fillRect(x, y, w, h);
-      ctx.restore();
+      ctx.fillRect(sel.x, sel.y, sel.w, sel.h);
     } else {
-      ctx.clearRect(x, y, w, h);
+      ctx.clearRect(sel.x, sel.y, sel.w, sel.h);
     }
+    ctx.restore();
   }
 
   duplicate(name = `${this.name} copy`) {

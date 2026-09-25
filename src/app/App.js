@@ -100,7 +100,7 @@ export class App {
     const tool = this.tools.get(id);
     if (!tool || tool === this.activeTool) return;
     if (!tool.isAvailable()) {
-      if (tool.id === 'transform') this.toast('Select an image layer to transform it');
+      if (tool.id === 'transform') this.toast('Select an image layer, or make a selection, to transform it');
       return;
     }
     this.activeTool?.deactivate();

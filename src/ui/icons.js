@@ -5,6 +5,9 @@ const ICONS = {
   transform:
     '<rect x="5" y="5" width="14" height="14"/><rect x="2" y="2" width="4" height="4"/><rect x="18" y="2" width="4" height="4"/><rect x="2" y="18" width="4" height="4"/><rect x="18" y="18" width="4" height="4"/>',
   marquee: '<rect x="4" y="4" width="16" height="16" stroke-dasharray="3 2.5"/>',
+  ellipseMarquee: '<ellipse cx="12" cy="12" rx="9" ry="7.5" stroke-dasharray="3 2.5"/>',
+  lasso:
+    '<path d="M7 17.5C4 16.3 2 14 2 11.2 2 6.7 6.5 3 12 3s10 3.7 10 8.2-4.5 8.3-10 8.3c-1 0-2-.1-2.9-.4"/><circle cx="7" cy="17.5" r="2"/><path d="M6.5 19.5c-.4 1.2-1.2 2-2.5 2.5"/>',
   brush:
     '<path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>',
   eraser:

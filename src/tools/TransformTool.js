@@ -1,7 +1,14 @@
 import { Tool } from './Tool.js';
 import { createCanvas, cloneCanvas } from '../utils/canvas.js';
 import { contentBounds } from '../utils/bounds.js';
-import { extractRegion } from '../commands/helpers.js';
+import {
+  clampSelection,
+  isRectSelection,
+  lassoSelection,
+  liftSelection,
+  rectSelection,
+  selectionPolygon,
+} from '../selection/index.js';
 
 const HANDLE_SIZE = 8;
 const ROTATE_HANDLE_OFFSET = 28;
@@ -78,8 +85,9 @@ export class TransformTool extends Tool {
 
   // ---- Session lifecycle --------------------------------------------------------------
 
+  /** Image layers can always be transformed; any other layer only its selected pixels. */
   isAvailable() {
-    return this.doc?.activeLayer?.kind === 'image';
+    return !!this.session || this.doc?.activeLayer?.kind === 'image' || !!this.doc?.selection;
   }
 
   activate() {
@@ -110,19 +118,24 @@ export class TransformTool extends Tool {
     const doc = this.doc;
     const layer = doc.activeLayer;
     if (!layer.visible || !this.isAvailable()) return;
-    const bounds = contentBounds(layer.canvas, doc.selection);
+    const sel = doc.selection;
+    const pixels = sel ? liftSelection(layer.canvas, sel) : layer.canvas;
+    const bounds = contentBounds(pixels);
     if (!bounds) {
       this.app.viewport.requestRender(false);
       return;
     }
 
     const base = cloneCanvas(layer.canvas);
-    base.getContext('2d').clearRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    if (sel) layer.erase(sel, base.getContext('2d'));
+    else base.getContext('2d').clearRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    const source = createCanvas(bounds.w, bounds.h);
+    source.getContext('2d').drawImage(pixels, -bounds.x, -bounds.y);
     this.session = {
       layer,
       version: layer.version,
       docSize: `${doc.width}x${doc.height}`,
-      source: extractRegion(layer, bounds),
+      source,
       base,
       preview: createCanvas(doc.width, doc.height),
       bounds,
@@ -187,6 +200,8 @@ export class TransformTool extends Tool {
     ctx.clearRect(0, 0, s.layer.canvas.width, s.layer.canvas.height);
     ctx.drawImage(s.base, 0, 0);
     this.drawClipped(ctx, s);
+    // Keep the transformed pixels selected so they can be transformed again or moved.
+    if (s.savedSelection) this.doc.selection = clampSelection(this.transformedSelection(), this.doc.bounds);
     this.session = null;
     this.drag = null;
     this.app.setPreview(null);
@@ -203,6 +218,21 @@ export class TransformTool extends Tool {
 
   toLocal(p) {
     return rotatePoint(p, this.session.pivot, -this.session.angle);
+  }
+
+  /** The original selection outline carried through the current scale/flip/rotation. */
+  transformedSelection() {
+    const s = this.session;
+    const { bounds: b, full } = s;
+    const sx = full.w / b.w;
+    const sy = full.h / b.h;
+    const points = selectionPolygon(s.savedSelection).map((p) => {
+      const u = (p.x - b.x) * sx;
+      const v = (p.y - b.y) * sy;
+      return this.toWorld({ x: s.flipX ? full.x + full.w - u : full.x + u, y: s.flipY ? full.y + full.h - v : full.y + v });
+    });
+    const shape = lassoSelection(points);
+    return isRectSelection(s.savedSelection) && s.angle === 0 ? rectSelection(shape) : shape;
   }
 
   /** Moves the pivot to the crop center without changing what's rendered. */

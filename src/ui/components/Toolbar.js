@@ -22,6 +22,7 @@ export class Toolbar {
       this.buttons.forEach((button, id) => button.classList.toggle('active', id === active.id));
     });
     app.bus.on('document:changed', () => this.updateAvailability());
+    app.bus.on('selection:changed', () => this.updateAvailability());
   }
 
   updateAvailability() {

@@ -1,5 +1,6 @@
 import { createCanvas } from '../utils/canvas.js';
 import { clamp } from '../utils/math.js';
+import { isRectSelection, selectionPath } from '../selection/index.js';
 
 const MIN_ZOOM = 0.02;
 const MAX_ZOOM = 64;
@@ -176,6 +177,10 @@ export class Viewport {
   }
 
   drawSelection(sel) {
+    if (!isRectSelection(sel)) {
+      this.drawSelectionPath(sel);
+      return;
+    }
     const { ctx } = this;
     const p = this.docToScreen(sel.x, sel.y);
     const x = Math.round(p.x) + 0.5;
@@ -190,6 +195,23 @@ export class Viewport {
     ctx.setLineDash([4, 4]);
     ctx.lineDashOffset = -this.antsOffset;
     ctx.strokeRect(x, y, w, h);
+    ctx.restore();
+  }
+
+  drawSelectionPath(sel) {
+    const { ctx, zoom } = this;
+    const path = selectionPath(sel);
+    ctx.save();
+    ctx.translate(this.panX, this.panY);
+    ctx.scale(zoom, zoom);
+    ctx.lineWidth = 1 / zoom;
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke(path);
+    ctx.strokeStyle = '#000000';
+    ctx.setLineDash([4 / zoom, 4 / zoom]);
+    ctx.lineDashOffset = -this.antsOffset / zoom;
+    ctx.stroke(path);
     ctx.restore();
   }
 }

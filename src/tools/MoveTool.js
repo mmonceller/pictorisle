@@ -1,6 +1,6 @@
 import { Tool } from './Tool.js';
 import { createCanvas, cloneCanvas, replaceCanvasContent } from '../utils/canvas.js';
-import { intersectRect } from '../utils/math.js';
+import { clampSelection, extractSelection, translateSelection } from '../selection/index.js';
 
 const NUDGE_KEYS = {
   ArrowLeft: [-1, 0],
@@ -51,12 +51,11 @@ export class MoveTool extends Tool {
     // A background layer never moves as a whole: move its pixels and refill the gap instead.
     const implicit = !doc.selection && !!layer.backgroundFill;
     const sel = doc.selection ?? (implicit ? doc.bounds : null);
-    const session = { layer, dx: 0, dy: 0, selection: sel ? { ...sel } : null, implicit };
+    const session = { layer, dx: 0, dy: 0, selection: sel, implicit };
     if (sel) {
-      session.floating = createCanvas(sel.w, sel.h);
-      session.floating.getContext('2d').drawImage(layer.canvas, -sel.x, -sel.y);
+      session.floating = extractSelection(layer.canvas, sel);
       session.base = cloneCanvas(layer.canvas);
-      layer.erase(sel.x, sel.y, sel.w, sel.h, session.base.getContext('2d'));
+      layer.erase(sel, session.base.getContext('2d'));
       session.preview = createCanvas(doc.width, doc.height);
     }
     this.session = session;
@@ -72,7 +71,7 @@ export class MoveTool extends Tool {
       ctx.clearRect(0, 0, s.preview.width, s.preview.height);
       ctx.drawImage(s.base, 0, 0);
       ctx.drawImage(s.floating, s.selection.x + dx, s.selection.y + dy);
-      if (!s.implicit) this.doc.selection = { ...s.selection, x: s.selection.x + dx, y: s.selection.y + dy };
+      if (!s.implicit) this.doc.selection = translateSelection(s.selection, dx, dy);
       this.app.setPreview(s.layer, s.preview);
     } else {
       s.layer.offsetX = dx;
@@ -91,7 +90,7 @@ export class MoveTool extends Tool {
     }
     if (s.selection) {
       replaceCanvasContent(s.layer.canvas, s.preview);
-      if (!s.implicit) this.doc.selection = intersectRect(this.doc.selection, this.doc.bounds);
+      if (!s.implicit) this.doc.selection = clampSelection(this.doc.selection, this.doc.bounds);
     } else {
       const copy = cloneCanvas(s.layer.canvas);
       s.layer.offsetX = 0;

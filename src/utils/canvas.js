@@ -1,3 +1,5 @@
+import { selectionPath } from '../selection/shapes.js';
+
 export function createCanvas(width, height) {
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(width));
@@ -12,10 +14,7 @@ export function cloneCanvas(source) {
 }
 
 export function clipToSelection(ctx, selection) {
-  if (!selection) return;
-  ctx.beginPath();
-  ctx.rect(selection.x, selection.y, selection.w, selection.h);
-  ctx.clip();
+  if (selection) ctx.clip(selectionPath(selection));
 }
 
 export function replaceCanvasContent(target, source) {

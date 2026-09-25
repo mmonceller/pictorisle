@@ -62,7 +62,7 @@ export const MENUS = [
       {
         label: 'Free Transform (Resize / Crop / Rotate)',
         command: 'freeTransform',
-        enabled: (app) => app.doc.activeLayer.kind === 'image',
+        enabled: (app) => app.tools.get('transform').isAvailable(),
       },
       { label: 'Flip Layer Horizontal', command: 'flipLayerHorizontal' },
       { label: 'Flip Layer Vertical', command: 'flipLayerVertical' },

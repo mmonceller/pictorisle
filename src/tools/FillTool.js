@@ -1,6 +1,8 @@
 import { Tool } from './Tool.js';
 import { floodFill } from '../utils/floodFill.js';
 import { hexToRgb } from '../utils/color.js';
+import { createCanvas } from '../utils/canvas.js';
+import { isRectSelection, replaceWithinSelection } from '../selection/index.js';
 
 export class FillTool extends Tool {
   static meta = { id: 'fill', label: 'Paint Bucket', icon: 'bucket', shortcut: 'k' };
@@ -35,7 +37,13 @@ export class FillTool extends Tool {
       bounds: selection,
     });
     if (!filled) return;
-    layer.ctx.putImageData(imageData, 0, 0);
+    if (selection && !isRectSelection(selection)) {
+      const result = createCanvas(width, height);
+      result.getContext('2d').putImageData(imageData, 0, 0);
+      replaceWithinSelection(layer.ctx, result, selection);
+    } else {
+      layer.ctx.putImageData(imageData, 0, 0);
+    }
     this.app.commit('Paint Bucket');
   }
 }
